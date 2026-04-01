@@ -118,17 +118,17 @@ export default function Login() {
             </Button>
           </form>
 
-          {/* Demo Credentials */}
+          {/* Register Link */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mb-3">Demo credentials:</p>
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 text-sm">
-              <p className="text-gray-600 dark:text-gray-300">
-                <span className="font-medium">Email:</span> demo@example.com
-              </p>
-              <p className="text-gray-600 dark:text-gray-300">
-                <span className="font-medium">Password:</span> demo123
-              </p>
-            </div>
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <a 
+                href="/register" 
+                className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500"
+              >
+                Sign up
+              </a>
+            </p>
           </div>
         </Card>
 
