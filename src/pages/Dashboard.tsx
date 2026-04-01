@@ -16,7 +16,6 @@ import {
 import { Card, CardHeader, StatCard } from '../components/ui/Card';
 import { Badge, StatusBadge, ValueBadge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Form';
-import { useLiveMatches } from '../hooks/useWebSocket';
 import type { DashboardSummary, Match, ValueBet } from '../types';
 
 function MatchCard({ match, isRealtime = false }: { match: Match; isRealtime?: boolean }) {
@@ -109,19 +108,8 @@ function ValueBetCard({ bet }: { bet: ValueBet }) {
 export default function Dashboard() {
   const [realtimeMatches, setRealtimeMatches] = useState<Record<number, Match>>({});
   
-  // WebSocket for live match updates
-  const { status: wsStatus } = useLiveMatches((update) => {
-    setRealtimeMatches((prev) => ({
-      ...prev,
-      [update.match_id]: {
-        ...prev[update.match_id],
-        id: update.match_id,
-        home_score: update.home_score,
-        away_score: update.away_score,
-        status: update.status as Match['status'],
-      } as Match,
-    }));
-  });
+  // WebSocket disabled - Render free tier doesn't support WebSockets
+  const wsStatus = 'disabled' as const;
 
   const { data: summary, isLoading: summaryLoading, refetch: refetchSummary } = useQuery<DashboardSummary>({
     queryKey: ['dashboard-summary'],
@@ -190,12 +178,9 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center text-sm">
-            <div className={`w-2 h-2 rounded-full mr-2 ${
-              wsStatus === 'connected' ? 'bg-green-500' : 
-              wsStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
-            }`} />
+            <div className={`w-2 h-2 rounded-full mr-2 bg-gray-400`} />
             <span className="text-gray-500 dark:text-gray-400">
-              {wsStatus === 'connected' ? 'Live' : wsStatus === 'connecting' ? 'Connecting...' : 'Offline'}
+              Live updates disabled
             </span>
           </div>
           <Button
@@ -361,10 +346,8 @@ export default function Dashboard() {
                 <span className="font-semibold dark:text-gray-100">{summary?.total_leagues || 0}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">WebSocket Status</span>
-                <StatusBadge 
-                  status={wsStatus === 'connected' ? 'active' : wsStatus === 'connecting' ? 'pending' : 'inactive'} 
-                />
+                <span className="text-sm text-gray-600 dark:text-gray-400">Live Updates</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Disabled (Render Free)</span>
               </div>
             </div>
           </Card>
