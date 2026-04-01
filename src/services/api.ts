@@ -9,7 +9,10 @@ import type {
   NotificationChannel
 } from '../types';
 
-const API_BASE_URL = '/api/v1';
+// Use environment variable for API URL, fallback to relative path
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
