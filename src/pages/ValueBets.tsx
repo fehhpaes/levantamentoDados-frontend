@@ -17,7 +17,6 @@ import { Button, Input, Select, Toggle } from '../components/ui/Form';
 import { Table, Pagination } from '../components/ui/Table';
 import { Badge, ValueBadge } from '../components/ui/Badge';
 import { getPredictedValueBets, getValueBets } from '../services/api';
-import { useValueBetAlerts } from '../hooks/useWebSocket';
 import type { ValueBet } from '../types';
 
 export default function ValueBets() {
@@ -39,34 +38,8 @@ export default function ValueBets() {
   const [alertsEnabled, setAlertsEnabled] = useState(true);
   const [realtimeAlerts, setRealtimeAlerts] = useState<ValueBet[]>([]);
 
-  // WebSocket for real-time value bet alerts
-  const { status: wsStatus } = useValueBetAlerts((alert) => {
-    if (alertsEnabled) {
-      // Add new alert to the list
-      const newBet: ValueBet = {
-        match_id: alert.match_id,
-        match_info: alert.match_info,
-        market: alert.market,
-        selection: alert.selection,
-        predicted_prob: alert.predicted_prob,
-        bookmaker_odds: alert.odds,
-        bookmaker_name: alert.bookmaker,
-        edge_percentage: alert.edge_percentage,
-        expected_value: alert.expected_value,
-        confidence: alert.confidence,
-      };
-      
-      setRealtimeAlerts((prev) => [newBet, ...prev.slice(0, 9)]);
-      
-      // Show browser notification
-      if (Notification.permission === 'granted') {
-        new Notification('Value Bet Alert!', {
-          body: `${alert.match_info.home_team} vs ${alert.match_info.away_team}: ${alert.selection} @ ${alert.odds.toFixed(2)} (${alert.edge_percentage.toFixed(1)}% edge)`,
-          icon: '/icon.png',
-        });
-      }
-    }
-  });
+  // WebSocket disabled - Render free tier doesn't support WebSockets
+  const wsStatus = 'disabled' as const;
 
   useEffect(() => {
     loadValueBets();

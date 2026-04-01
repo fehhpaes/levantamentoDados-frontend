@@ -16,7 +16,6 @@ import { Card, CardHeader, StatCard } from '../components/ui/Card';
 import { Table, Pagination } from '../components/ui/Table';
 import { Select, Button, Input } from '../components/ui/Form';
 import { Badge, ValueBadge, StatusBadge } from '../components/ui/Badge';
-import { useOddsUpdates } from '../hooks/useWebSocket';
 import type { Match, Odds } from '../types';
 
 interface OddsData {
@@ -46,26 +45,8 @@ export default function OddsPage() {
   const [realtimeOdds, setRealtimeOdds] = useState<Record<string, OddsData>>({});
   const itemsPerPage = 20;
 
-  // WebSocket for real-time odds updates
-  const { status: wsStatus } = useOddsUpdates(selectedMatch, (update) => {
-    const key = `${update.match_id}-${update.bookmaker_id}-${update.market_type}`;
-    setRealtimeOdds((prev) => ({
-      ...prev,
-      [key]: {
-        match_id: update.match_id,
-        bookmaker: `Bookmaker ${update.bookmaker_id}`,
-        market_type: update.market_type,
-        home_odds: update.odds.home,
-        draw_odds: update.odds.draw,
-        away_odds: update.odds.away,
-        over_odds: update.odds.over,
-        under_odds: update.odds.under,
-        line: update.odds.line,
-        edge_percentage: update.value_percentage,
-        is_value_bet: update.is_value_bet,
-      },
-    }));
-  });
+  // WebSocket disabled - Render free tier doesn't support WebSockets
+  const wsStatus = 'disabled' as const;
 
   const { data: matches } = useQuery<Match[]>({
     queryKey: ['today-matches-for-odds'],
