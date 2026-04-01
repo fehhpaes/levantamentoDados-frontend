@@ -46,7 +46,7 @@ export default function OddsPage() {
   const itemsPerPage = 20;
 
   // WebSocket disabled - Render free tier doesn't support WebSockets
-  const wsStatus = 'disabled' as const;
+  const wsStatus: string = 'disabled';
 
   const { data: matches } = useQuery<Match[]>({
     queryKey: ['today-matches-for-odds'],

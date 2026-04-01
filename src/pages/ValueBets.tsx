@@ -39,7 +39,7 @@ export default function ValueBets() {
   const [realtimeAlerts, setRealtimeAlerts] = useState<ValueBet[]>([]);
 
   // WebSocket disabled - Render free tier doesn't support WebSockets
-  const wsStatus = 'disabled' as const;
+  const wsStatus: string = 'disabled';
 
   useEffect(() => {
     loadValueBets();
