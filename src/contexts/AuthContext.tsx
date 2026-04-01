@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { login as apiLogin, logout as apiLogout, getCurrentUser, refreshToken } from '../services/api';
 
 interface User {
-  id: number;
+  id: string;
   email: string;
   username: string;
   full_name?: string;
@@ -36,7 +36,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (token) {
         try {
           const response = await getCurrentUser();
-          setUser(response.data);
+          const data = response.data;
+          setUser({
+            id: data.id,
+            email: data.email,
+            username: data.username,
+            full_name: data.full_name,
+            is_active: data.is_active,
+            is_superuser: data.role === 'admin'
+          });
         } catch (error) {
           // Token might be expired, try to refresh
           try {
@@ -48,7 +56,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 localStorage.setItem('refresh_token', refreshResponse.data.refresh_token);
               }
               const userResponse = await getCurrentUser();
-              setUser(userResponse.data);
+              const data = userResponse.data;
+              setUser({
+                id: data.id,
+                email: data.email,
+                username: data.username,
+                full_name: data.full_name,
+                is_active: data.is_active,
+                is_superuser: data.role === 'admin'
+              });
             } else {
               localStorage.removeItem('access_token');
             }
@@ -73,7 +89,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.setItem('refresh_token', newRefreshToken);
     }
     
-    setUser(userData);
+    if (userData) {
+      setUser({
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        full_name: userData.full_name,
+        is_active: userData.is_active,
+        is_superuser: userData.role === 'admin'
+      });
+    }
   };
 
   const logout = async () => {
@@ -91,7 +116,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const refreshUser = async () => {
     try {
       const response = await getCurrentUser();
-      setUser(response.data);
+      const data = response.data;
+      setUser({
+        id: data.id,
+        email: data.email,
+        username: data.username,
+        full_name: data.full_name,
+        is_active: data.is_active,
+        is_superuser: data.role === 'admin'
+      });
     } catch {
       setUser(null);
     }
