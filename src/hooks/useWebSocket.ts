@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+const WS_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL.replace(/^https?:\/\//, (m) => m.replace('http', 'ws'))}`
+  : '';
+
 type WebSocketStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
 interface WebSocketMessage {
@@ -184,7 +188,9 @@ interface LiveMatchUpdate {
 }
 
 export function useLiveMatches(onUpdate?: (update: LiveMatchUpdate) => void) {
-  const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/matches/live`;
+  const wsUrl = WS_BASE_URL 
+    ? `${WS_BASE_URL}/api/ws/matches/live`
+    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/ws/matches/live`;
   
   return useWebSocket({
     url: wsUrl,
@@ -214,9 +220,11 @@ interface OddsUpdate {
 }
 
 export function useOddsUpdates(matchId?: number, onUpdate?: (update: OddsUpdate) => void) {
-  const wsUrl = matchId
-    ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/odds/${matchId}`
-    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/odds`;
+  const wsUrl = WS_BASE_URL
+    ? (matchId ? `${WS_BASE_URL}/api/ws/odds/${matchId}` : `${WS_BASE_URL}/api/ws/odds`)
+    : (matchId
+      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/odds/${matchId}`
+      : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/odds`);
   
   return useWebSocket({
     url: wsUrl,
@@ -248,7 +256,9 @@ interface ValueBetAlert {
 }
 
 export function useValueBetAlerts(onAlert?: (alert: ValueBetAlert) => void) {
-  const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/value-bets`;
+  const wsUrl = WS_BASE_URL
+    ? `${WS_BASE_URL}/api/ws/value-bets`
+    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/value-bets`;
   
   return useWebSocket({
     url: wsUrl,
@@ -271,7 +281,9 @@ interface SystemNotification {
 }
 
 export function useSystemNotifications(onNotification?: (notification: SystemNotification) => void) {
-  const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/notifications`;
+  const wsUrl = WS_BASE_URL
+    ? `${WS_BASE_URL}/api/ws/notifications`
+    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/notifications`;
   
   return useWebSocket({
     url: wsUrl,
