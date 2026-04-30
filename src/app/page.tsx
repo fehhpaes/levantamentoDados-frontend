@@ -2,6 +2,8 @@ import { getTodayMatches } from "@/services/api";
 import { MatchCard } from "@/components/MatchCard";
 import { LayoutDashboard } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const matches = await getTodayMatches();
 
