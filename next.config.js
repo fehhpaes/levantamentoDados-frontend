@@ -1,13 +1,15 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-});
-
 const nextConfig = {
-  // Your existing next config here
+  // Configurações padrão do Next.js
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = async () => {
+  const withPWA = (await import('next-pwa')).default({
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+    disable: process.env.NODE_ENV === 'development',
+  });
+  
+  return withPWA(nextConfig);
+};
