@@ -26,7 +26,7 @@ export const Header = () => {
       router.refresh();
       
       alert('Sincronização iniciada! Os novos jogos aparecerão em instantes.');
-    } catch (error) {
+    } catch {
       alert('Erro ao sincronizar. Tente novamente mais tarde.');
     } finally {
       setIsSyncing(false);
