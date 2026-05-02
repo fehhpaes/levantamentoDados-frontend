@@ -56,7 +56,8 @@ export async function getLeagues(): Promise<ILeague[]> {
       throw new Error('Failed to fetch leagues');
     }
 
-    return res.json();
+    const data = await res.json();
+    return Array.isArray(data) ? data.filter((league: ILeague) => league && league.id !== null && league.id !== undefined) : [];
   } catch (error) {
     console.error('API Error:', error);
     return [];
