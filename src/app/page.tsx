@@ -1,6 +1,8 @@
 import { getTodayMatches } from "@/services/api";
 import { MatchCard } from "@/components/MatchCard";
-import { LayoutDashboard } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+import { Header } from "@/components/layout/Header";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 export const dynamic = "force-dynamic";
 
@@ -8,38 +10,40 @@ export default async function Home() {
   const matches = await getTodayMatches();
 
   return (
-    <main className="min-h-screen bg-black text-white pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-zinc-800 p-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-green-500 p-2 rounded-xl shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-            <LayoutDashboard size={20} className="text-black" />
-          </div>
-          <div>
-            <h1 className="text-lg font-black tracking-tight leading-none">Previsão FC</h1>
-            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mt-1">
-              Dashboard de Previsões IA
-            </p>
-          </div>
-        </div>
-      </header>
+    <main className="min-h-screen bg-[#050505] text-white pb-32">
+      <Header />
 
-      <div className="max-w-md mx-auto px-4">
+      <div className="max-w-md mx-auto px-5 pt-8">
         <section>
-          <div className="flex justify-between items-end mb-6">
-            <h2 className="text-xl font-bold tracking-tight">Jogos de Hoje</h2>
-            <span className="text-xs text-zinc-500 font-medium">
-              {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
-            </span>
+          <div className="flex justify-between items-center mb-10">
+            <div>
+              <h2 className="text-3xl font-black tracking-tighter uppercase italic text-white/90">
+                Live <span className="text-green-500">Board</span>
+              </h2>
+              <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mt-1">
+                Análises de Precisão IA
+              </p>
+            </div>
+            <div className="bg-zinc-900/80 px-4 py-2 rounded-2xl border border-white/5 shadow-inner">
+              <span className="text-xs text-green-500 font-black tracking-widest tabular-nums uppercase">
+                {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+              </span>
+            </div>
           </div>
 
           {matches.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center px-6 bg-zinc-950 rounded-3xl border border-dashed border-zinc-800">
-              <p className="text-zinc-400 font-medium">Nenhuma partida encontrada para hoje.</p>
-              <p className="text-zinc-600 text-xs mt-2">Os dados são atualizados automaticamente às 02h.</p>
+            <div className="flex flex-col items-center justify-center py-32 text-center px-10 bg-zinc-900/20 rounded-[3rem] border border-white/5 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-b from-green-500/[0.02] to-transparent" />
+              <div className="bg-zinc-900 p-5 rounded-3xl mb-6 shadow-2xl relative z-10 border border-white/5">
+                <RefreshCw size={36} className="text-zinc-700 animate-pulse" />
+              </div>
+              <p className="text-zinc-300 font-black text-xl tracking-tight relative z-10">NENHUMA PARTIDA</p>
+              <p className="text-zinc-600 text-xs mt-3 leading-relaxed font-bold uppercase tracking-widest relative z-10">
+                Aguardando processamento de dados globais
+              </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-6">
               {matches.map((match) => (
                 <MatchCard key={match.fixture_id} match={match} />
               ))}
@@ -48,21 +52,7 @@ export default async function Home() {
         </section>
       </div>
 
-      {/* Bottom Nav Placeholder for Mobile Feel */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-zinc-950 border-t border-zinc-800 p-4 flex justify-around items-center">
-        <div className="flex flex-col items-center gap-1 text-green-500">
-          <LayoutDashboard size={20} />
-          <span className="text-[10px] font-bold uppercase">Dashboard</span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-zinc-600">
-          <div className="w-5 h-5 rounded-md border-2 border-zinc-600" />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Histórico</span>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-zinc-600">
-          <div className="w-5 h-5 rounded-full border-2 border-zinc-600" />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Perfil</span>
-        </div>
-      </nav>
+      <BottomNav />
     </main>
   );
 }
