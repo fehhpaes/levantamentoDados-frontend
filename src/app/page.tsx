@@ -1,13 +1,24 @@
-import { getTodayMatches } from "@/services/api";
+import { getTodayMatches, getLeagues } from "@/services/api";
 import { MatchCard } from "@/components/MatchCard";
 import { RefreshCw } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { LeagueFilter } from "@/components/LeagueFilter";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
-  const matches = await getTodayMatches();
+interface HomeProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+  const leagueId = params.league_id ? Number(params.league_id) : undefined;
+
+  const [matches, leagues] = await Promise.all([
+    getTodayMatches(leagueId),
+    getLeagues()
+  ]);
 
   return (
     <main className="min-h-screen bg-[#050505] text-white pb-32">
@@ -15,7 +26,7 @@ export default async function Home() {
 
       <div className="max-w-md mx-auto px-5 pt-8">
         <section>
-          <div className="flex justify-between items-center mb-10">
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="text-3xl font-black tracking-tighter uppercase italic text-white/90">
                 Live <span className="text-green-500">Board</span>
@@ -24,12 +35,9 @@ export default async function Home() {
                 Análises de Precisão IA
               </p>
             </div>
-            <div className="bg-zinc-900/80 px-4 py-2 rounded-2xl border border-white/5 shadow-inner">
-              <span className="text-xs text-green-500 font-black tracking-widest tabular-nums uppercase">
-                {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-              </span>
-            </div>
           </div>
+
+          <LeagueFilter leagues={leagues} />
 
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center px-10 bg-zinc-900/20 rounded-[3rem] border border-white/5 relative overflow-hidden">
@@ -39,7 +47,7 @@ export default async function Home() {
               </div>
               <p className="text-zinc-300 font-black text-xl tracking-tight relative z-10">NENHUMA PARTIDA</p>
               <p className="text-zinc-600 text-xs mt-3 leading-relaxed font-bold uppercase tracking-widest relative z-10">
-                Aguardando processamento de dados globais
+                {leagueId ? "Nenhum jogo nesta liga hoje" : "Aguardando processamento de dados globais"}
               </p>
             </div>
           ) : (

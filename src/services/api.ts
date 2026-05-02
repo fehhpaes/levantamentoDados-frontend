@@ -1,7 +1,14 @@
+export interface ILeague {
+  id: number;
+  name: string;
+  logo?: string;
+}
+
 export interface IMatch {
   fixture_id: number;
   date: string;
   status: 'SCHEDULED' | 'FINISHED';
+  league: ILeague;
   homeTeam: { id: number; name: string };
   awayTeam: { id: number; name: string };
   score: { home: number; away: number };
@@ -17,10 +24,15 @@ export interface IMatch {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com';
 
-export async function getTodayMatches(): Promise<IMatch[]> {
+export async function getTodayMatches(leagueId?: number): Promise<IMatch[]> {
   try {
-    const res = await fetch(`${BASE_URL}/api/matches/today`, {
-      cache: 'no-store', // Ensure we get fresh data
+    const url = new URL(`${BASE_URL}/api/matches/today`);
+    if (leagueId) {
+      url.searchParams.append('league_id', leagueId.toString());
+    }
+
+    const res = await fetch(url.toString(), {
+      cache: 'no-store',
     });
 
     if (!res.ok) {
@@ -31,5 +43,40 @@ export async function getTodayMatches(): Promise<IMatch[]> {
   } catch (error) {
     console.error('API Error:', error);
     return [];
+  }
+}
+
+export async function getLeagues(): Promise<ILeague[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/matches/leagues`, {
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch leagues');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('API Error:', error);
+    return [];
+  }
+}
+
+export async function triggerBackendSync(): Promise<{ message: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/matches/sync`, {
+      method: 'GET', // or POST if you prefer
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error('Sync failed');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Sync Error:', error);
+    return { message: 'Failed to trigger sync' };
   }
 }

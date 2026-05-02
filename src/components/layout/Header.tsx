@@ -3,15 +3,34 @@
 import React, { useState } from 'react';
 import { LayoutDashboard, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { triggerBackendSync } from '@/services/api';
 
 export const Header = () => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const router = useRouter();
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    router.refresh();
-    setTimeout(() => setIsRefreshing(false), 1000);
+  const handleSync = async () => {
+    if (isSyncing) return;
+    
+    setIsSyncing(true);
+    try {
+      // 1. Trigger the background process in backend
+      const response = await triggerBackendSync();
+      console.log(response.message);
+      
+      // 2. Wait a few seconds for the initial sync of basic match data
+      // (The heavy AI training continues in background)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // 3. Refresh the UI to show new matches
+      router.refresh();
+      
+      alert('Sincronização iniciada! Os novos jogos aparecerão em instantes.');
+    } catch (error) {
+      alert('Erro ao sincronizar. Tente novamente mais tarde.');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   return (
@@ -29,13 +48,18 @@ export const Header = () => {
           </div>
         </div>
         <button 
-          onClick={handleRefresh}
-          className="p-2 bg-zinc-900 rounded-full border border-white/5 active:scale-90 transition-all hover:bg-zinc-800"
-          title="Atualizar dados"
+          onClick={handleSync}
+          disabled={isSyncing}
+          className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
+            isSyncing ? 'bg-zinc-800 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800'
+          }`}
+          title="Sincronizar dados agora"
         >
           <RefreshCw 
             size={18} 
-            className={`text-zinc-400 transition-all duration-700 ${isRefreshing ? 'rotate-180 text-green-500' : ''}`} 
+            className={`transition-all duration-1000 ${
+              isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
+            }`} 
           />
         </button>
       </div>
