@@ -1,10 +1,16 @@
 import React from 'react';
 import { IMatch } from '@/services/api';
-import { Clock, TrendingUp, Trophy, Target } from 'lucide-react';
+import { Clock, TrendingUp, Target } from 'lucide-react';
 
 interface MatchCardProps {
   match: IMatch;
 }
+
+const TeamLogo = ({ name }: { name: string }) => (
+  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-800 to-black border border-white/5 flex items-center justify-center text-zinc-500 font-black text-xl shadow-inner group-hover:border-green-500/30 transition-colors">
+    {name.charAt(0)}
+  </div>
+);
 
 export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
   const matchTime = new Date(match.date).toLocaleTimeString('pt-BR', {
@@ -19,12 +25,6 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
   };
 
   const probs = match.prediction?.probabilities;
-
-  const TeamLogo = ({ name }: { name: string }) => (
-    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-800 to-black border border-white/5 flex items-center justify-center text-zinc-500 font-black text-xl shadow-inner group-hover:border-green-500/30 transition-colors">
-      {name.charAt(0)}
-    </div>
-  );
 
   return (
     <div className="group bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-[2rem] p-5 mb-1 transition-all active:scale-[0.98] hover:bg-zinc-900/60 shadow-xl overflow-hidden relative">
