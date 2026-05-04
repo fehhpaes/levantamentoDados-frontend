@@ -42,17 +42,23 @@ export const Header = () => {
     return () => clearInterval(interval);
   }, [syncInfo.isSyncing, router]);
 
-  const handleSync = async () => {
+  const handleSync = async (competitionCode?: string) => {
     if (syncInfo.isSyncing) return;
     
     try {
       setSyncInfo(prev => ({ ...prev, isSyncing: true, progress: 0, currentTask: 'Iniciando...' }));
-      await triggerBackendSync();
+      await triggerBackendSync(competitionCode);
     } catch {
       alert('Erro ao iniciar sincronização.');
       setSyncInfo(prev => ({ ...prev, isSyncing: false }));
     }
   };
+
+  const quickLeagues = [
+    { name: 'Brasil', code: 'BSA' },
+    { name: 'Inglaterra', code: 'PL' },
+    { name: 'Espanha', code: 'PD' }
+  ];
 
   return (
     <header className="sticky top-0 z-20 bg-black/60 backdrop-blur-xl border-b border-white/5 p-5">
@@ -69,21 +75,37 @@ export const Header = () => {
               </p>
             </div>
           </div>
-          <button 
-            onClick={handleSync}
-            disabled={syncInfo.isSyncing}
-            className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
-              syncInfo.isSyncing ? 'bg-zinc-800 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800'
-            }`}
-            title="Sincronizar dados agora"
-          >
-            <RefreshCw 
-              size={18} 
-              className={`transition-all duration-1000 ${
-                syncInfo.isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
-              }`} 
-            />
-          </button>
+          
+          <div className="flex gap-2">
+            {!syncInfo.isSyncing && (
+              <div className="flex gap-1">
+                {quickLeagues.map(l => (
+                  <button 
+                    key={l.code}
+                    onClick={() => handleSync(l.code)}
+                    className="text-[8px] font-black bg-zinc-900 border border-white/5 px-2 py-1 rounded-lg text-zinc-400 hover:text-green-500 hover:border-green-500/30 transition-all uppercase"
+                  >
+                    + {l.name}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button 
+              onClick={() => handleSync()}
+              disabled={syncInfo.isSyncing}
+              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
+                syncInfo.isSyncing ? 'bg-zinc-800 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800'
+              }`}
+              title="Sincronizar tudo"
+            >
+              <RefreshCw 
+                size={18} 
+                className={`transition-all duration-1000 ${
+                  syncInfo.isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
+                }`} 
+              />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar UI */}
