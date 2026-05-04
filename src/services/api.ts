@@ -81,3 +81,27 @@ export async function triggerBackendSync(): Promise<{ message: string }> {
     return { message: 'Failed to trigger sync' };
   }
 }
+
+export interface ISyncStatus {
+  isSyncing: boolean;
+  progress: number;
+  currentTask: string;
+  lastSync: string | null;
+}
+
+export async function getSyncStatus(): Promise<ISyncStatus> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/matches/sync-status`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch sync status');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Status Error:', error);
+    return { isSyncing: false, progress: 0, currentTask: '', lastSync: null };
+  }
+}
