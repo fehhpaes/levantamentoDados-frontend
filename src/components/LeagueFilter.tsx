@@ -17,17 +17,17 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
   const activeLeague = searchParams.get('league_id');
   const [localSyncing, setLocalSyncing] = useState<number | null>(null);
 
-  // Map league IDs to Football-Data codes (this could be improved by storing codes in the DB)
+  // Map league IDs to Football-Data codes (IDs fixed for Football-Data.org)
   const getLeagueCode = (id: number) => {
     const mapping: { [key: number]: string } = {
-      2013: 'BSA',
-      2021: 'PL',
-      2014: 'PD',
-      2002: 'BL1',
-      2019: 'SA',
-      2015: 'FL1',
-      2017: 'PPL',
-      2003: 'DED'
+      2013: 'BSA', // Brasileirão
+      2021: 'PL',  // Premier League
+      2014: 'PD',  // La Liga
+      2002: 'BL1', // Bundesliga
+      2019: 'SA',  // Serie A
+      2015: 'FL1', // Ligue 1
+      2017: 'PPL', // Primeira Liga (Portugal)
+      2003: 'DED'  // Eredivisie
     };
     return mapping[id];
   };

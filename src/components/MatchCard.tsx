@@ -119,6 +119,14 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
               </div>
             ))}
           </div>
+
+          {match.prediction?.analysis && (
+            <div className="mt-4 p-4 bg-green-500/[0.03] border border-green-500/10 rounded-2xl">
+              <p className="text-[11px] text-zinc-400 leading-relaxed italic">
+                "{match.prediction.analysis}"
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
