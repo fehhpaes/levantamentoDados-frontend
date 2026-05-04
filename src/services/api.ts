@@ -24,10 +24,12 @@ export interface IMatch {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com';
+console.log('[Frontend API] Using BASE_URL:', BASE_URL);
 
-export async function getTodayMatches(leagueId?: number): Promise<IMatch[]> {
+export async function getTodayMatches(leagueId?: number, dateType: string = 'today'): Promise<IMatch[]> {
   try {
     const url = new URL(`${BASE_URL}/api/matches/today`);
+    url.searchParams.append('date_type', dateType);
     if (leagueId) {
       url.searchParams.append('league_id', leagueId.toString());
     }
@@ -47,10 +49,27 @@ export async function getTodayMatches(leagueId?: number): Promise<IMatch[]> {
   }
 }
 
+export async function getTopPredictions(): Promise<IMatch[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/matches/top`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch top predictions');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('API Error:', error);
+    return [];
+  }
+}
+
 export async function getLeagues(): Promise<ILeague[]> {
   try {
     const res = await fetch(`${BASE_URL}/api/matches/leagues`, {
-      next: { revalidate: 3600 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {
