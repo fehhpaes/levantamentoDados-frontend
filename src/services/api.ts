@@ -64,10 +64,15 @@ export async function getLeagues(): Promise<ILeague[]> {
   }
 }
 
-export async function triggerBackendSync(): Promise<{ message: string }> {
+export async function triggerBackendSync(competitionCode?: string): Promise<{ message: string }> {
   try {
-    const res = await fetch(`${BASE_URL}/api/matches/sync`, {
-      method: 'GET', // or POST if you prefer
+    const url = new URL(`${BASE_URL}/api/matches/sync`);
+    if (competitionCode) {
+      url.searchParams.append('competitionCode', competitionCode);
+    }
+
+    const res = await fetch(url.toString(), {
+      method: 'GET',
       cache: 'no-store',
     });
 
