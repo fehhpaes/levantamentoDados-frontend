@@ -78,10 +78,10 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
   };
 
   return (
-    <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar -mx-5 px-5 mb-6">
+    <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar -mx-5 px-5 mb-6 scroll-smooth touch-pan-x">
       <button
         onClick={() => handleLeagueClick(null)}
-        className={`whitespace-nowrap px-5 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border ${
+        className={`whitespace-nowrap px-5 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border flex-shrink-0 ${
           !activeLeague 
           ? 'bg-green-500 text-black border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
           : 'bg-zinc-900 text-zinc-500 border-white/5 hover:border-white/10'
@@ -100,7 +100,7 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
           <button
             key={league?.id ?? `league-${index}`}
             onClick={() => (league?.id ? handleLeagueClick(league.id) : undefined)}
-            className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 group relative ${
+            className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 group relative flex-shrink-0 ${
               activeLeague && league?.id && activeLeague === league.id.toString()
               ? 'bg-green-500 text-black border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
               : 'bg-zinc-900 text-zinc-500 border-white/5 hover:border-white/10'
