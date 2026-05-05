@@ -79,6 +79,61 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
             </div>
           </div>
 
+          {/* Power Comparison */}
+          <section className="mb-10">
+            <div className="flex items-center gap-2 mb-4 text-zinc-500">
+              <Activity size={14} />
+              <h4 className="text-[10px] font-black uppercase tracking-widest">Comparativo de Poder</h4>
+            </div>
+            <div className="space-y-6 bg-zinc-900/30 p-5 rounded-[2rem] border border-white/5">
+              {/* Attack Power */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-[9px] font-black uppercase tracking-tighter text-zinc-500">
+                  <span>Ataque</span>
+                  <span>Defesa</span>
+                </div>
+                <div className="flex gap-1 h-2">
+                  <div className="flex-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all duration-1000"
+                      style={{ width: `${Math.min((detail.stats?.home_shots_on_target || 4) * 15, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex-1 bg-zinc-800 rounded-full overflow-hidden flex justify-end">
+                    <div 
+                      className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)] transition-all duration-1000"
+                      style={{ width: `${Math.min((detail.stats?.away_shots_on_target || 4) * 15, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Prediction Markets */}
+              {detail.prediction?.probabilities && (
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-zinc-500 uppercase mb-2">Over 2.5 Gols</p>
+                    <div className="flex items-end justify-between">
+                      <span className="text-xl font-black text-white">{(detail.prediction.probabilities.over25! * 100).toFixed(0)}%</span>
+                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${detail.prediction.probabilities.over25! > 0.6 ? 'bg-green-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}>
+                        {detail.prediction.probabilities.over25! > 0.6 ? 'ALTO' : 'MÉDIO'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-zinc-500 uppercase mb-2">Ambas Marcam</p>
+                    <div className="flex items-end justify-between">
+                      <span className="text-xl font-black text-white">{(detail.prediction.probabilities.bttsYes! * 100).toFixed(0)}%</span>
+                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${detail.prediction.probabilities.bttsYes! > 0.6 ? 'bg-green-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}>
+                        {detail.prediction.probabilities.bttsYes! > 0.6 ? 'SIM' : 'NÃO'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+
           {/* Form Trend */}
           <section className="mb-8">
             <div className="flex items-center gap-2 mb-4 text-zinc-500">
