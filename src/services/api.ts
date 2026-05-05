@@ -12,17 +12,31 @@ export interface IMatch {
   homeTeam: { id: number; name: string };
   awayTeam: { id: number; name: string };
   score: { home: number; away: number };
+  stats?: {
+    home_possession: number;
+    away_possession: number;
+    home_shots_on_target: number;
+    away_shots_on_target: number;
+  };
   prediction?: {
     outcome: number; // 0: Home, 1: Draw, 2: Away
     probabilities: {
       homeWin: number;
       draw: number;
       awayWin: number;
+      over25?: number;
+      under25?: number;
+      bttsYes?: number;
+      bttsNo?: number;
     };
     odds?: {
       homeWin: number;
       draw: number;
       awayWin: number;
+      over25?: number;
+      under25?: number;
+      bttsYes?: number;
+      bttsNo?: number;
     };
     valueBet?: {
       isFound: boolean;
