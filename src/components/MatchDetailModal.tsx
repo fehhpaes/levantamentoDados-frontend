@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { IMatchDetail, getMatchById } from '@/services/api';
-import { X, Trophy, History, Activity, Calendar } from 'lucide-react';
+import { X, Trophy, History, Activity } from 'lucide-react';
 
 interface MatchDetailModalProps {
   fixture_id: number;
@@ -138,7 +138,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
                 <h4 className="text-[10px] font-black uppercase tracking-widest">Análise Técnica</h4>
               </div>
               <p className="text-xs text-zinc-400 italic leading-relaxed">
-                "{detail.prediction.analysis}"
+                &quot;{detail.prediction.analysis}&quot;
               </p>
             </section>
           )}

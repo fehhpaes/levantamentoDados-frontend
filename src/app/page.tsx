@@ -1,5 +1,5 @@
 import { getTodayMatches, getLeagues, getTopPredictions } from "@/services/api";
-import { RefreshCw, Star, Calendar } from "lucide-react";
+import { Star, Calendar } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LeagueFilter } from "@/components/LeagueFilter";

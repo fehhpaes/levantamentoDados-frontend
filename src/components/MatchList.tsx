@@ -17,7 +17,7 @@ export const MatchList: React.FC<MatchListProps> = ({ initialMatches, leagueId }
   const [matches, setMatches] = useState<IMatch[]>(initialMatches);
 
   useEffect(() => {
-    // Initialize matches when props change (e.g. user changes date/league)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMatches(initialMatches);
   }, [initialMatches]);
 
