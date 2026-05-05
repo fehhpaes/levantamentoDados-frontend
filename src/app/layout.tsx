@@ -1,8 +1,10 @@
-import type { Metadata, Viewport } from "next";
+import { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
+
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -45,6 +47,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         {children}
+        <Toaster position="top-center" theme="dark" closeButton richColors />
       </body>
     </html>
   );

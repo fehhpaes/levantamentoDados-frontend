@@ -225,3 +225,86 @@ export async function getMatchById(fixture_id: number): Promise<IMatchDetail | n
     return null;
   }
 }
+
+export interface IVirtualBet {
+  _id: string;
+  userId: string;
+  fixtureId: number;
+  matchInfo: {
+    homeTeam: string;
+    awayTeam: string;
+    league: string;
+    date: string;
+  };
+  market: '1X2' | 'OVER_UNDER_2.5' | 'BTTS';
+  selection: string;
+  odds: number;
+  stake: number;
+  potentialReturn: number;
+  status: 'PENDING' | 'WON' | 'LOST' | 'REFUNDED';
+  result?: {
+    homeScore: number;
+    awayScore: number;
+  };
+  createdAt: string;
+}
+
+export interface IBankrollStats {
+  totalStaked: number;
+  totalReturned: number;
+  profit: number;
+  roi: number;
+  winRate: number;
+  wonCount: number;
+  lostCount: number;
+  totalBets: number;
+}
+
+export async function placeVirtualBet(betData: {
+  userId: string;
+  fixtureId: number;
+  market: string;
+  selection: string;
+  odds: number;
+  stake: number;
+}): Promise<IVirtualBet | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/bets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(betData),
+    });
+
+    if (!res.ok) throw new Error('Failed to place bet');
+    return res.json();
+  } catch (error) {
+    console.error('Bet Error:', error);
+    return null;
+  }
+}
+
+export async function getUserBets(userId: string): Promise<{ bets: IVirtualBet[]; stats: IBankrollStats }> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/bets/user/${userId}`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch user bets');
+    return res.json();
+  } catch (error) {
+    console.error('Bets Fetch Error:', error);
+    return {
+      bets: [],
+      stats: {
+        totalStaked: 0,
+        totalReturned: 0,
+        profit: 0,
+        roi: 0,
+        winRate: 0,
+        wonCount: 0,
+        lostCount: 0,
+        totalBets: 0
+      }
+    };
+  }
+}

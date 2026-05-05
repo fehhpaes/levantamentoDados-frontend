@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { IMatchDetail, getMatchById } from '@/services/api';
-import { X, Trophy, History, Activity } from 'lucide-react';
+import { IMatchDetail, getMatchById, placeVirtualBet } from '@/services/api';
+import { X, Trophy, History, Activity, Wallet, Plus, Minus, ArrowRight } from 'lucide-react';
+import { useUser } from '@/hooks/useUser';
+import { toast } from 'sonner';
 
 interface MatchDetailModalProps {
   fixture_id: number;
@@ -10,8 +12,11 @@ interface MatchDetailModalProps {
 }
 
 export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, onClose }) => {
+  const { deviceId } = useUser();
   const [detail, setDetail] = useState<IMatchDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stake, setStake] = useState(50);
+  const [betLoading, setBetLoading] = useState(false);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -21,6 +26,28 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
     };
     fetchDetail();
   }, [fixture_id]);
+
+  const handlePlaceBet = async (market: string, selection: string, odds: number) => {
+    if (!deviceId) return;
+    setBetLoading(true);
+
+    const result = await placeVirtualBet({
+      userId: deviceId,
+      fixtureId: fixture_id,
+      market,
+      selection,
+      odds,
+      stake
+    });
+
+    setBetLoading(false);
+
+    if (result) {
+      toast.success('Aposta virtual registrada com sucesso!');
+    } else {
+      toast.error('Erro ao registrar aposta.');
+    }
+  };
 
   if (loading) {
     return (
@@ -195,6 +222,57 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
               <p className="text-xs text-zinc-400 italic leading-relaxed">
                 &quot;{detail.prediction.analysis}&quot;
               </p>
+            </section>
+          )}
+
+          {/* Virtual Betting Section */}
+          {detail.status === 'SCHEDULED' && detail.prediction?.probabilities && (
+            <section className="mt-10 border-t border-white/5 pt-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2 text-zinc-400">
+                  <Wallet size={16} />
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Aposta Virtual</h4>
+                </div>
+                <div className="flex items-center gap-4 bg-zinc-900 px-4 py-2 rounded-2xl border border-white/5">
+                  <button onClick={() => setStake(Math.max(10, stake - 10))} className="text-zinc-500 hover:text-green-500 transition-colors"><Minus size={14}/></button>
+                  <span className="text-xs font-black w-12 text-center">R$ {stake}</span>
+                  <button onClick={() => setStake(stake + 10)} className="text-zinc-500 hover:text-green-500 transition-colors"><Plus size={14}/></button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {/* Winner Market */}
+                <button 
+                  disabled={betLoading}
+                  onClick={() => {
+                    const probs = detail.prediction!.probabilities;
+                    const selection = probs.homeWin > probs.awayWin && probs.homeWin > probs.draw ? 'HOME' : 
+                                     (probs.awayWin > probs.homeWin && probs.awayWin > probs.draw ? 'AWAY' : 'DRAW');
+                    const odds = selection === 'HOME' ? (detail.prediction!.odds?.homeWin || 2.0) :
+                                 selection === 'AWAY' ? (detail.prediction!.odds?.awayWin || 2.0) : 
+                                 (detail.prediction!.odds?.draw || 3.0);
+                    handlePlaceBet('1X2', selection, odds);
+                  }}
+                  className="w-full bg-green-500 text-black py-4 rounded-3xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-green-400 transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  {betLoading ? 'Processando...' : (
+                    <>
+                      Seguir Palpite AI (1X2) <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+
+                {/* Over 2.5 Market (If high probability) */}
+                {detail.prediction.probabilities.over25! > 0.6 && (
+                  <button 
+                    disabled={betLoading}
+                    onClick={() => handlePlaceBet('OVER_UNDER_2.5', 'OVER', detail.prediction!.odds?.over25 || 1.85)}
+                    className="w-full bg-zinc-900 text-white py-4 rounded-3xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 border border-white/5 hover:bg-zinc-800 transition-all disabled:opacity-50"
+                  >
+                    Apostar Over 2.5 @ {(detail.prediction.odds?.over25 || 1.85).toFixed(2)}
+                  </button>
+                )}
+              </div>
             </section>
           )}
         </div>
