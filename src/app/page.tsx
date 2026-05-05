@@ -1,5 +1,5 @@
 import { getTodayMatches, getLeagues, getTopPredictions } from "@/services/api";
-import { Star, Calendar } from "lucide-react";
+import { Star, Calendar, Trophy } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LeagueFilter } from "@/components/LeagueFilter";
@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <div className="max-w-md mx-auto px-5 pt-8">
         <section>
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-end mb-6">
             <div>
               <h2 className="text-3xl font-black tracking-tighter uppercase italic text-white/90">
                 Live <span className="text-green-500">Board</span>
@@ -44,6 +44,16 @@ export default async function Home({ searchParams }: HomeProps) {
                 Análises de Precisão IA
               </p>
             </div>
+            
+            <a 
+              href={`${process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com'}/api/matches/report`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-400 text-black text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.3)] active:scale-95"
+            >
+              <Trophy size={14} />
+              Imprimir
+            </a>
           </div>
 
           {/* Quick Filters: Dates & Top 5 */}
