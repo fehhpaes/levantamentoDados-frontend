@@ -1,5 +1,5 @@
 import { getTodayMatches, getLeagues, getTopPredictions } from "@/services/api";
-import { Star, Calendar, Trophy } from "lucide-react";
+import { Star, Calendar, Trophy, TrendingUp } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LeagueFilter } from "@/components/LeagueFilter";

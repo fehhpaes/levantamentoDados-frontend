@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { IMatchDetail, getMatchById, placeVirtualBet } from '@/services/api';
-import { X, Trophy, History, Activity, Wallet, Plus, Minus, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, Activity, Wallet, Plus, Minus, ArrowRight, ShieldCheck, Target } from 'lucide-react';
 import { useUser } from '@/hooks/useUser';
 import { toast } from 'sonner';
 
