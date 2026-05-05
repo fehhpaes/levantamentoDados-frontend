@@ -72,7 +72,7 @@ export const MatchList: React.FC<MatchListProps> = ({ initialMatches, leagueId }
         ].map((f) => (
           <button
             key={f.id}
-            onClick={() => setFilterMode(f.id as any)}
+            onClick={() => setFilterMode(f.id as 'all' | 'high-confidence' | 'value-bet')}
             className={`whitespace-nowrap px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
               filterMode === f.id
               ? 'bg-zinc-100 text-black border-white'
