@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ILeague, triggerBackendSync, getSyncStatus } from '@/services/api';
+import { ILeague, triggerBackendSync } from '@/services/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RefreshCw } from 'lucide-react';
 
@@ -32,6 +32,23 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
     return mapping[id];
   };
 
+  // Map league IDs to ISO Country Codes for FlagCDN
+  const getCountryCode = (id: number) => {
+    const mapping: { [key: number]: string } = {
+      2013: 'br',     // Brasil
+      2021: 'gb-eng', // Inglaterra
+      2014: 'es',     // Espanha
+      2002: 'de',     // Alemanha
+      2019: 'it',     // Itália
+      2015: 'fr',     // França
+      2017: 'pt',     // Portugal
+      2003: 'nl',     // Holanda
+      2001: 'eu',     // Champions League (usando ícone Europa)
+      2000: 'world'   // World Cup
+    };
+    return mapping[id];
+  };
+
   const handleLeagueClick = (id: number | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (id) {
@@ -53,7 +70,6 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
     try {
       setLocalSyncing(id);
       await triggerBackendSync(code);
-      // The Header component will pick up the global sync state via polling
     } catch {
       alert('Erro ao sincronizar liga.');
     } finally {
@@ -74,39 +90,47 @@ export const LeagueFilter: React.FC<LeagueFilterProps> = ({ leagues }) => {
         Todas
       </button>
 
-      {leagues.map((league, index) => (
-        <button
-          key={league?.id ?? `league-${index}`}
-          onClick={() => (league?.id ? handleLeagueClick(league.id) : undefined)}
-          className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 group relative ${
-            activeLeague && league?.id && activeLeague === league.id.toString()
-            ? 'bg-green-500 text-black border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
-            : 'bg-zinc-900 text-zinc-500 border-white/5 hover:border-white/10'
-          }`}
-        >
-          {league?.logo && (
-            <div className="relative w-4 h-4 grayscale brightness-200">
-              <Image 
-                src={league.logo} 
-                alt={league?.name || 'League'} 
-                fill
-                className="object-contain rounded-sm"
-              />
-            </div>
-          )}
-          {league?.name || 'Desconhecida'}
+      {leagues.map((league, index) => {
+        const countryCode = league?.id ? getCountryCode(league.id) : null;
+        const flagUrl = countryCode 
+          ? `https://flagcdn.com/w40/${countryCode}.png` 
+          : (league?.logo?.startsWith('http') ? league.logo : null);
 
-          {/* Individual Sync Button (Quick Test) */}
-          {league?.id && getLeagueCode(league.id) && (
-            <div 
-              onClick={(e) => handleSyncLeague(e, league.id)}
-              className={`ml-1 p-1 rounded-md bg-white/10 hover:bg-white/20 transition-colors ${localSyncing === league.id ? 'animate-spin' : ''}`}
-            >
-              <RefreshCw size={10} />
-            </div>
-          )}
-        </button>
-      ))}
+        return (
+          <button
+            key={league?.id ?? `league-${index}`}
+            onClick={() => (league?.id ? handleLeagueClick(league.id) : undefined)}
+            className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 group relative ${
+              activeLeague && league?.id && activeLeague === league.id.toString()
+              ? 'bg-green-500 text-black border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
+              : 'bg-zinc-900 text-zinc-500 border-white/5 hover:border-white/10'
+            }`}
+          >
+            {flagUrl && (
+              <div className="relative w-5 h-4 shadow-sm overflow-hidden rounded-[2px]">
+                <Image 
+                  src={flagUrl} 
+                  alt={league?.name || 'League'} 
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+            )}
+            {league?.name || 'Desconhecida'}
+
+            {/* Individual Sync Button (Quick Test) */}
+            {league?.id && getLeagueCode(league.id) && (
+              <div 
+                onClick={(e) => handleSyncLeague(e, league.id)}
+                className={`ml-1 p-1 rounded-md bg-white/10 hover:bg-white/20 transition-colors ${localSyncing === league.id ? 'animate-spin' : ''}`}
+              >
+                <RefreshCw size={10} />
+              </div>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };

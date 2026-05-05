@@ -15,11 +15,18 @@ const TeamLogo = ({ name }: { name: string }) => (
 
 export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const matchTime = new Date(match.date).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const matchTime = mounted 
+    ? new Date(match.date).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '--:--';
 
   const getProbColor = (prob: number, isWinner: boolean) => {
     if (isWinner) return 'from-green-400 to-green-600 shadow-[0_0_10px_rgba(34,197,94,0.4)]';
