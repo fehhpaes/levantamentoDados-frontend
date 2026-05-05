@@ -1,9 +1,9 @@
 import { getTodayMatches, getLeagues, getTopPredictions } from "@/services/api";
-import { MatchCard } from "@/components/MatchCard";
 import { RefreshCw, Star, Calendar } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { LeagueFilter } from "@/components/LeagueFilter";
+import { MatchList } from "@/components/MatchList";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -90,24 +90,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </span>
           </div>
 
-          {matches.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-32 text-center px-10 bg-zinc-900/20 rounded-[3rem] border border-white/5 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-green-500/[0.02] to-transparent" />
-              <div className="bg-zinc-900 p-5 rounded-3xl mb-6 shadow-2xl relative z-10 border border-white/5">
-                <RefreshCw size={36} className="text-zinc-700 animate-pulse" />
-              </div>
-              <p className="text-zinc-300 font-black text-xl tracking-tight relative z-10">NENHUMA PARTIDA</p>
-              <p className="text-zinc-600 text-xs mt-3 leading-relaxed font-bold uppercase tracking-widest relative z-10">
-                {leagueId ? "Nenhum jogo nesta liga hoje" : "Aguardando processamento de dados globais"}
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-6">
-              {matches.map((match) => (
-                <MatchCard key={match.fixture_id} match={match} />
-              ))}
-            </div>
-          )}
+          <MatchList initialMatches={matches} leagueId={leagueId} />
         </section>
       </div>
 
