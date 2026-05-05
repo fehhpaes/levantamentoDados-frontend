@@ -17,11 +17,17 @@ export default async function Home({ searchParams }: HomeProps) {
   const leagueId = params.league_id ? Number(params.league_id) : undefined;
   const dateType = (params.date_type as string) || 'today';
   const showTop = params.filter === 'top';
+  const showValue = params.filter === 'value';
 
   const [matches, leagues] = await Promise.all([
     showTop ? getTopPredictions() : getTodayMatches(leagueId, dateType),
     getLeagues()
   ]);
+
+  // Client-side filtering for value bets if requested
+  const displayMatches = showValue 
+    ? matches.filter(m => m.prediction?.valueBet?.isFound)
+    : matches;
 
   const dateFilters = [
     { label: 'Ontem', value: 'yesterday' },
@@ -70,6 +76,18 @@ export default async function Home({ searchParams }: HomeProps) {
               Top 5 Bet
             </Link>
 
+            <Link 
+              href="?filter=value"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                showValue 
+                ? 'bg-purple-500 text-white border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)]' 
+                : 'bg-zinc-900 text-purple-400/70 border-purple-500/10 hover:border-purple-500/30'
+              }`}
+            >
+              <TrendingUp size={14} />
+              Value Radar
+            </Link>
+
             <div className="h-10 w-[1px] bg-white/5 mx-1" />
 
             {dateFilters.map((df) => (
@@ -77,7 +95,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 key={df.value}
                 href={`?date_type=${df.value}`}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                  !showTop && dateType === df.value
+                  !showTop && !showValue && dateType === df.value
                   ? 'bg-white text-black border-white'
                   : 'bg-zinc-900 text-zinc-500 border-white/5 hover:border-white/10'
                 }`}
@@ -93,14 +111,14 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              {showTop ? 'Melhores Probabilidades' : `Partidas de ${dateFilters.find(d => d.value === dateType)?.label}`}
+              {showTop ? 'Melhores Probabilidades' : showValue ? 'Oportunidades de Valor' : `Partidas de ${dateFilters.find(d => d.value === dateType)?.label}`}
             </h3>
             <span className="text-[10px] font-black text-zinc-700 bg-zinc-900/50 px-2 py-0.5 rounded-md border border-white/5">
-              {matches.length} JOGOS
+              {displayMatches.length} JOGOS
             </span>
           </div>
 
-          <MatchList initialMatches={matches} leagueId={leagueId} />
+          <MatchList initialMatches={displayMatches} leagueId={leagueId} />
         </section>
       </div>
 

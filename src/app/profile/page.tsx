@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { User, TrendingUp, Wallet, Target, History, Calendar, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { User, TrendingUp, Wallet, Target, History, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useUser } from '@/hooks/useUser';
 import { getUserBets, IVirtualBet, IBankrollStats } from '@/services/api';
 
@@ -20,6 +20,8 @@ export default function ProfilePage() {
       });
     }
   }, [deviceId]);
+
+  const stats = data?.stats;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white pb-32">
@@ -51,8 +53,8 @@ export default function ProfilePage() {
                   <Wallet size={40} />
                 </div>
                 <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Lucro Total</p>
-                <p className={`text-xl font-black ${data?.stats.profit! >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {data?.stats.profit! >= 0 ? '+' : ''}{data?.stats.profit.toFixed(2)}
+                <p className={`text-xl font-black ${stats && stats.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  {stats && stats.profit >= 0 ? '+' : ''}{stats?.profit?.toFixed(2) ?? '0.00'}
                 </p>
               </div>
 
@@ -61,8 +63,8 @@ export default function ProfilePage() {
                   <TrendingUp size={40} />
                 </div>
                 <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">ROI Mensal</p>
-                <p className={`text-xl font-black ${data?.stats.roi! >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {data?.stats.roi.toFixed(1)}%
+                <p className={`text-xl font-black ${stats && stats.roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  {stats?.roi?.toFixed(1) ?? '0.0'}%
                 </p>
               </div>
 
@@ -71,7 +73,7 @@ export default function ProfilePage() {
                   <Target size={40} />
                 </div>
                 <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Win Rate</p>
-                <p className="text-xl font-black text-white">{data?.stats.winRate.toFixed(1)}%</p>
+                <p className="text-xl font-black text-white">{stats?.winRate?.toFixed(1) ?? '0.0'}%</p>
               </div>
 
               <div className="bg-zinc-900/40 border border-white/5 p-5 rounded-3xl relative overflow-hidden group">
@@ -79,7 +81,67 @@ export default function ProfilePage() {
                   <History size={40} />
                 </div>
                 <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Total Apostas</p>
-                <p className="text-xl font-black text-white">{data?.stats.totalBets}</p>
+                <p className="text-xl font-black text-white">{stats?.totalBets ?? 0}</p>
+              </div>
+            </div>
+
+            {/* Bankroll Evolution Chart */}
+            <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-[2.5rem] mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Evolução de Banca</p>
+                <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">LIVE TREND</span>
+              </div>
+              
+              <div className="h-32 w-full flex items-end gap-1 px-2">
+                {data?.bets && data.bets.length > 0 ? (
+                  (() => {
+                    const profitTrend: number[] = [];
+                    let currentProfit = 0;
+                    // Calculate profit after each bet (reversed because bets are sorted newest first)
+                    [...data.bets].reverse().forEach(bet => {
+                      if (bet.status === 'WON') currentProfit += (bet.potentialReturn - bet.stake);
+                      else if (bet.status === 'LOST') currentProfit -= bet.stake;
+                      profitTrend.push(currentProfit);
+                    });
+
+                    const max = Math.max(...profitTrend, 10);
+                    const min = Math.min(...profitTrend, -10);
+                    const range = max - min;
+
+                    return (
+                      <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible">
+                        <defs>
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        {/* Area */}
+                        <path
+                          d={`M 0 40 ${profitTrend.map((p, i) => 
+                            `L ${(i / (profitTrend.length - 1)) * 100} ${40 - ((p - min) / range) * 40}`
+                          ).join(' ')} L 100 40 Z`}
+                          fill="url(#gradient)"
+                        />
+                        {/* Line */}
+                        <path
+                          d={profitTrend.map((p, i) => 
+                            `${i === 0 ? 'M' : 'L'} ${(i / (profitTrend.length - 1)) * 100} ${40 - ((p - min) / range) * 40}`
+                          ).join(' ')}
+                          fill="none"
+                          stroke="#22c55e"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    );
+                  })()
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center border border-dashed border-white/5 rounded-2xl">
+                    <p className="text-[8px] font-black text-zinc-700 uppercase">Aguardando dados de apostas</p>
+                  </div>
+                )}
               </div>
             </div>
 

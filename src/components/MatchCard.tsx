@@ -138,7 +138,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
                           {(p.val * 100).toFixed(0)}%
                         </span>
                         {isValueBet && (
-                          <span className="text-[7px] font-black text-green-500 uppercase tracking-tighter animate-pulse">VALUE</span>
+                          <span className="text-[7px] font-black text-purple-400 uppercase tracking-tighter animate-pulse flex items-center gap-0.5">
+                            <TrendingUp size={8} /> VALUE
+                          </span>
                         )}
                       </div>
                     </div>

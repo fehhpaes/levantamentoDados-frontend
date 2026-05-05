@@ -28,7 +28,11 @@ export interface IMatch {
       under25?: number;
       bttsYes?: number;
       bttsNo?: number;
+      doubleChance1X?: number;
+      doubleChance12?: number;
+      doubleChanceX2?: number;
     };
+    exactScores?: { score: string; probability: number }[];
     odds?: {
       homeWin: number;
       draw: number;
@@ -37,6 +41,9 @@ export interface IMatch {
       under25?: number;
       bttsYes?: number;
       bttsNo?: number;
+      doubleChance1X?: number;
+      doubleChance12?: number;
+      doubleChanceX2?: number;
     };
     valueBet?: {
       isFound: boolean;
