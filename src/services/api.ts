@@ -59,7 +59,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-b
 /**
  * Custom fetch with timeout to prevent Vercel 504 timeouts
  */
-async function fetchWithTimeout(url: string, options: any = {}, timeout = 8000) {
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout = 8000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   
@@ -110,7 +110,7 @@ export async function getLeagues(): Promise<ILeague[]> {
     const res = await fetchWithTimeout(`${BASE_URL}/api/matches/leagues`);
     if (!res.ok) throw new Error('Failed to fetch leagues');
     const data = await res.json();
-    return Array.isArray(data) ? data.filter((l: any) => l && l.id) : [];
+    return Array.isArray(data) ? data.filter((l: ILeague) => l && l.id) : [];
   } catch (error) {
     console.error('API Error (Leagues):', error);
     return [];
@@ -132,7 +132,23 @@ export async function getSyncStatus(): Promise<ISyncStatus> {
     if (!res.ok) throw new Error('Sync status failed');
     return res.json();
   } catch (error) {
+    console.error('API Error (Sync Status):', error);
     return { isSyncing: false, progress: 0, currentTask: '', lastSync: null };
+  }
+}
+
+export async function triggerBackendSync(competitionCode?: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const url = new URL(`${BASE_URL}/api/matches/sync`);
+    if (competitionCode) {
+      url.searchParams.append('competitionCode', competitionCode);
+    }
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error('Sync trigger failed');
+    return res.json();
+  } catch (error) {
+    console.error('API Error (Sync Trigger):', error);
+    throw error;
   }
 }
 
@@ -165,6 +181,7 @@ export async function getBacktestStats(): Promise<IBacktestStats> {
     if (!res.ok) throw new Error('Backtest failed');
     return res.json();
   } catch (error) {
+    console.error('API Error (Backtest):', error);
     return { total: 0, hits: 0, accuracy: 0, leagueStats: [], recentMatches: [] };
   }
 }
@@ -183,6 +200,7 @@ export async function getMatchById(fixture_id: number): Promise<IMatchDetail | n
     if (!res.ok) throw new Error('Match detail failed');
     return res.json();
   } catch (error) {
+    console.error('API Error (Match Detail):', error);
     return null;
   }
 }
@@ -221,7 +239,16 @@ export interface IBankrollStats {
   totalBets: number;
 }
 
-export async function placeVirtualBet(betData: any): Promise<IVirtualBet | null> {
+export interface IBetRequest {
+  userId: string;
+  fixtureId: number;
+  market: string;
+  selection: string;
+  odds: number;
+  stake: number;
+}
+
+export async function placeVirtualBet(betData: IBetRequest): Promise<IVirtualBet | null> {
   try {
     const res = await fetch(`${BASE_URL}/api/bets`, {
       method: 'POST',
@@ -231,6 +258,7 @@ export async function placeVirtualBet(betData: any): Promise<IVirtualBet | null>
     if (!res.ok) throw new Error('Bet place failed');
     return res.json();
   } catch (error) {
+    console.error('API Error (Place Bet):', error);
     return null;
   }
 }
@@ -241,6 +269,7 @@ export async function getUserBets(userId: string): Promise<{ bets: IVirtualBet[]
     if (!res.ok) throw new Error('User bets failed');
     return res.json();
   } catch (error) {
+    console.error('API Error (User Bets):', error);
     return {
       bets: [],
       stats: { totalStaked: 0, totalReturned: 0, profit: 0, roi: 0, winRate: 0, wonCount: 0, lostCount: 0, totalBets: 0 }
