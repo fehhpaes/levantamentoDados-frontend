@@ -37,14 +37,43 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
 
   const probs = match.prediction?.probabilities;
 
+  // Determine hit/miss for finished matches
+  const getAccuracyStatus = () => {
+    if (match.status !== 'FINISHED' || !match.prediction) return null;
+    
+    const { home, away } = match.score;
+    let actualOutcome;
+    if (home > away) actualOutcome = 0;
+    else if (home === away) actualOutcome = 1;
+    else actualOutcome = 2;
+
+    const isHit = match.prediction.outcome === actualOutcome;
+    return isHit ? 'HIT' : 'MISS';
+  };
+
+  const accuracy = getAccuracyStatus();
+
   return (
     <>
       <div 
         onClick={() => setIsModalOpen(true)}
-        className="group bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-[2rem] p-5 mb-1 transition-all active:scale-[0.98] hover:bg-zinc-900/60 shadow-xl overflow-hidden relative cursor-pointer"
+        className={`group bg-zinc-900/40 backdrop-blur-md border rounded-[2rem] p-5 mb-1 transition-all active:scale-[0.98] hover:bg-zinc-900/60 shadow-xl overflow-hidden relative cursor-pointer ${
+          accuracy === 'HIT' ? 'border-green-500/20' : accuracy === 'MISS' ? 'border-red-500/20' : 'border-white/5'
+        }`}
       >
+        {/* Accuracy Badge */}
+        {accuracy && (
+          <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl font-black text-[10px] tracking-widest uppercase shadow-2xl flex items-center gap-1.5 z-20 ${
+            accuracy === 'HIT' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+          }`}>
+            {accuracy === 'HIT' ? '✅ ACERTOU' : '❌ ERROU'}
+          </div>
+        )}
+
         {/* Decorative Gradient Background */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-[50px] -z-10 rounded-full" />
+        <div className={`absolute top-0 right-0 w-32 h-32 blur-[50px] -z-10 rounded-full ${
+          accuracy === 'HIT' ? 'bg-green-500/10' : accuracy === 'MISS' ? 'bg-red-500/10' : 'bg-green-500/5'
+        }`} />
         
         <div className="flex justify-between items-center mb-5">
           <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-full border border-white/5">
