@@ -22,12 +22,12 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
     setMounted(true);
   }, []);
 
-  const matchTime = mounted 
-    ? new Date(match.date).toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : '--:--';
+  const matchDateTime = mounted 
+    ? {
+        time: new Date(match.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        date: new Date(match.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      }
+    : { time: '--:--', date: '--/--' };
 
   const getProbColor = (prob: number, isWinner: boolean) => {
     if (isWinner) return 'from-green-400 to-green-600 shadow-[0_0_10px_rgba(34,197,94,0.4)]';
@@ -78,7 +78,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
         <div className="flex justify-between items-center mb-5">
           <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-full border border-white/5">
             <Clock size={12} className="text-green-500" />
-            <span className="text-zinc-400 text-[10px] font-bold tracking-widest">{matchTime}</span>
+            <span className="text-zinc-400 text-[10px] font-bold tracking-widest uppercase">
+              {matchDateTime.date} • {matchDateTime.time}
+            </span>
           </div>
           <div className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest border ${
             match.status === 'FINISHED' 
