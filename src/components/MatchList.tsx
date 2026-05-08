@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { IMatch } from '@/services/api';
+import { IMatch, getTodayMatches, getTopPredictions } from '@/services/api';
 import { MatchCard } from '@/components/MatchCard';
 import { RefreshCw } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { useSearchParams } from 'next/navigation';
 
 interface MatchListProps {
   initialMatches: IMatch[];
@@ -16,6 +17,32 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-b
 export const MatchList: React.FC<MatchListProps> = ({ initialMatches, leagueId }) => {
   const [matches, setMatches] = useState<IMatch[]>(initialMatches);
   const [filterMode, setFilterMode] = useState<'all' | 'high-confidence' | 'value-bet'>('all');
+  const searchParams = useSearchParams();
+
+  // Polling to keep data fresh as a fallback to WebSocket
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const dateType = searchParams.get('date_type') || 'today';
+        const filter = searchParams.get('filter');
+        
+        let updatedData: IMatch[];
+        if (filter === 'top') {
+          updatedData = await getTopPredictions();
+        } else {
+          updatedData = await getTodayMatches(leagueId, dateType);
+        }
+
+        if (updatedData && updatedData.length > 0) {
+          setMatches(updatedData);
+        }
+      } catch (error) {
+        console.error('[Polling] Failed to refresh matches:', error);
+      }
+    }, 300000); // 5 minutes
+
+    return () => clearInterval(pollInterval);
+  }, [leagueId, searchParams]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
