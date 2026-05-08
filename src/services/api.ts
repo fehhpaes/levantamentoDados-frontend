@@ -54,7 +54,8 @@ export interface IMatch {
   };
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-api.vercel.app'; // Change to your Vercel URL
+const WORKER_URL = 'https://levantamentodados-backend.onrender.com';
 
 /**
  * Custom fetch with timeout to prevent Vercel 504 timeouts
@@ -128,7 +129,7 @@ export interface ISyncStatus {
 
 export async function getSyncStatus(): Promise<ISyncStatus> {
   try {
-    const res = await fetchWithTimeout(`${BASE_URL}/api/matches/sync-status`);
+    const res = await fetchWithTimeout(`${WORKER_URL}/api/matches/sync-status`);
     if (!res.ok) throw new Error('Sync status failed');
     return res.json();
   } catch (error) {
@@ -139,7 +140,7 @@ export async function getSyncStatus(): Promise<ISyncStatus> {
 
 export async function triggerBackendSync(competitionCode?: string): Promise<{ success: boolean; message: string }> {
   try {
-    const url = new URL(`${BASE_URL}/api/matches/sync`);
+    const url = new URL(`${WORKER_URL}/api/matches/sync`);
     if (competitionCode) {
       url.searchParams.append('competitionCode', competitionCode);
     }
