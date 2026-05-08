@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, CheckCircle2, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { triggerBackendSync, getSyncStatus, ISyncStatus } from '@/services/api';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com';
 
 export const Header = () => {
   const [syncInfo, setSyncInfo] = useState<ISyncStatus>({
@@ -12,7 +14,31 @@ export const Header = () => {
     currentTask: '',
     lastSync: null
   });
+  const [isWaking, setIsWaking] = useState(false);
   const router = useRouter();
+
+  // Keep-Alive Polling (Automatic "Button Press")
+  useEffect(() => {
+    const wakeServer = async () => {
+      try {
+        await fetch(`${API_URL}/api/matches/ping`, { 
+          mode: 'no-cors',
+          keepalive: true 
+        });
+        console.log('[Keep-Alive] Server pinged successfully');
+      } catch (e) {
+        console.warn('[Keep-Alive] Failed to ping server');
+      }
+    };
+
+    // Ping every 10 minutes
+    const interval = setInterval(wakeServer, 10 * 60 * 1000);
+    
+    // Initial ping
+    wakeServer();
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Polling to check sync status
   useEffect(() => {
@@ -41,6 +67,16 @@ export const Header = () => {
 
     return () => clearInterval(interval);
   }, [syncInfo.isSyncing, router]);
+
+  const handleManualWake = async () => {
+    setIsWaking(true);
+    try {
+      await fetch(`${API_URL}/api/matches/ping`);
+      setTimeout(() => setIsWaking(false), 2000);
+    } catch {
+      setIsWaking(false);
+    }
+  };
 
   const handleSync = async (competitionCode?: string) => {
     if (syncInfo.isSyncing) return;
@@ -104,6 +140,17 @@ export const Header = () => {
                   syncInfo.isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
                 }`} 
               />
+            </button>
+
+            <button 
+              onClick={handleManualWake}
+              disabled={isWaking}
+              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
+                isWaking ? 'bg-zinc-800 text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'bg-zinc-900 text-zinc-600 hover:bg-zinc-800'
+              }`}
+              title="Acordar Servidor"
+            >
+              <Zap size={18} className={isWaking ? 'animate-pulse' : ''} />
             </button>
           </div>
         </div>
