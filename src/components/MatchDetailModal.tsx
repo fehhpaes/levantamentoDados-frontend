@@ -97,7 +97,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
             </div>
             <div className="text-center">
               <p className="text-2xl font-black text-white italic tabular-nums">
-                {detail.status === 'FINISHED' ? `${detail.score.home} - ${detail.score.away}` : 'VS'}
+                {detail.status === 'FINISHED' && detail.score ? `${detail.score.home} - ${detail.score.away}` : 'VS'}
               </p>
             </div>
             <div className="flex-1 text-center">
@@ -239,7 +239,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
             </div>
             <div className="flex justify-between items-center bg-zinc-900/30 p-4 rounded-2xl border border-white/5">
               <div className="flex gap-1.5">
-                {detail.form.home.map((f, i) => (
+                {detail.form?.home?.map((f, i) => (
                   <span key={i} className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black ${getResultColor(f.result)}`}>
                     {f.result}
                   </span>
@@ -247,7 +247,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({ fixture_id, 
               </div>
               <div className="h-4 w-[1px] bg-white/10" />
               <div className="flex gap-1.5">
-                {detail.form.away.map((f, i) => (
+                {detail.form?.away?.map((f, i) => (
                   <span key={i} className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black ${getResultColor(f.result)}`}>
                     {f.result}
                   </span>

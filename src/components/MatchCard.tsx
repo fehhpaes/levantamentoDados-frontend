@@ -107,7 +107,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
                 <span className="text-[10px] font-black text-zinc-600 mb-1 tracking-tighter">SCORE</span>
                 <div className="bg-black/60 px-4 py-2 rounded-2xl border border-white/5 shadow-2xl">
                   <p className="text-white font-black text-2xl tracking-tighter tabular-nums">
-                    {match.score.home} <span className="text-zinc-600 mx-1">:</span> {match.score.away}
+                    {match.score?.home ?? 0} <span className="text-zinc-600 mx-1">:</span> {match.score?.away ?? 0}
                   </p>
                 </div>
               </div>
@@ -197,4 +197,5 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
       )}
     </>
   );
+};
 };

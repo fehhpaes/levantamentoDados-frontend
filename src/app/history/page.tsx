@@ -109,7 +109,7 @@ export default async function HistoryPage() {
                   </div>
                   <div className="bg-black/60 px-3 py-1 rounded-lg border border-white/5">
                     <p className="text-sm font-black tabular-nums">
-                      {match.score.home} : {match.score.away}
+                      {match.score?.home ?? 0} : {match.score?.away ?? 0}
                     </p>
                   </div>
                   <div className="flex-1 text-left">
