@@ -153,6 +153,17 @@ export async function triggerBackendSync(competitionCode?: string): Promise<{ su
   }
 }
 
+export async function triggerManualTraining(): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/matches/train`);
+    if (!res.ok) throw new Error('Training trigger failed');
+    return res.json();
+  } catch (error) {
+    console.error('API Error (Training Trigger):', error);
+    throw error;
+  }
+}
+
 export interface IBacktestStats {
   total: number;
   hits: number;

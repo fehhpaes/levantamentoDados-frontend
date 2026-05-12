@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, RefreshCw, CheckCircle2, Zap } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, CheckCircle2, Zap, Brain } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { triggerBackendSync, getSyncStatus, ISyncStatus } from '@/services/api';
+import { triggerBackendSync, getSyncStatus, ISyncStatus, triggerManualTraining } from '@/services/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamento-dados-api.vercel.app';
 
@@ -15,6 +15,7 @@ export const Header = () => {
     lastSync: null
   });
   const [isWaking, setIsWaking] = useState(false);
+  const [isTraining, setIsTraining] = useState(false);
   const router = useRouter();
 
   // Keep-Alive Polling (Automatic "Button Press")
@@ -66,7 +67,7 @@ export const Header = () => {
     }
 
     return () => clearInterval(interval);
-  }, [syncInfo.isSyncing, router]);
+  }, [syncInfo.isSyncing, router, syncInfo.isSyncing]);
 
   const handleManualWake = async () => {
     setIsWaking(true);
@@ -87,6 +88,19 @@ export const Header = () => {
     } catch {
       alert('Erro ao iniciar sincronização.');
       setSyncInfo(prev => ({ ...prev, isSyncing: false }));
+    }
+  };
+
+  const handleTrain = async () => {
+    if (isTraining || syncInfo.isSyncing) return;
+    setIsTraining(true);
+    try {
+      await triggerManualTraining();
+      setSyncInfo(prev => ({ ...prev, isSyncing: true, progress: 70, currentTask: 'Iniciando Treinamento IA...' }));
+    } catch {
+      alert('Erro ao iniciar treinamento.');
+    } finally {
+      setTimeout(() => setIsTraining(false), 3000);
     }
   };
 
@@ -126,6 +140,18 @@ export const Header = () => {
                 ))}
               </div>
             )}
+            
+            <button 
+              onClick={handleTrain}
+              disabled={isTraining || syncInfo.isSyncing}
+              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
+                isTraining ? 'bg-purple-500/20 text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'bg-zinc-900 text-zinc-600 hover:bg-zinc-800'
+              }`}
+              title="Treinar IA Agora"
+            >
+              <Brain size={18} className={isTraining ? 'animate-pulse' : ''} />
+            </button>
+
             <button 
               onClick={() => handleSync()}
               disabled={syncInfo.isSyncing}
