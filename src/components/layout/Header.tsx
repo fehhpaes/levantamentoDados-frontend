@@ -21,7 +21,7 @@ export const Header = () => {
   useEffect(() => {
     const wakeServer = async () => {
       try {
-        await fetch(`${API_URL}/api/matches/ping`, { 
+        await fetch(`${API_URL}/api/ping`, { 
           mode: 'no-cors',
           keepalive: true 
         });
@@ -71,7 +71,7 @@ export const Header = () => {
   const handleManualWake = async () => {
     setIsWaking(true);
     try {
-      await fetch(`${API_URL}/api/matches/ping`);
+      await fetch(`${API_URL}/api/ping`);
       setTimeout(() => setIsWaking(false), 2000);
     } catch {
       setIsWaking(false);
