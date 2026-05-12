@@ -216,6 +216,3 @@ export const Header = () => {
     </header>
   );
 };
-der>
-  );
-};
