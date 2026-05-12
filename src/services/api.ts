@@ -55,7 +55,7 @@ export interface IMatch {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamento-dados-api.vercel.app';
-const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://levantamentodados-backend.onrender.com';
+const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://fehhpaes-previsao-fc-worker.hf.space';
 
 /**
  * Custom fetch with timeout to prevent Vercel 504 timeouts

@@ -5,7 +5,7 @@ import { LayoutDashboard, RefreshCw, CheckCircle2, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { triggerBackendSync, getSyncStatus, ISyncStatus } from '@/services/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamento-dados-api.vercel.app';
 
 export const Header = () => {
   const [syncInfo, setSyncInfo] = useState<ISyncStatus>({

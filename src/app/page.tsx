@@ -52,7 +52,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
             
             <a 
-              href={`${process.env.NEXT_PUBLIC_API_URL || 'https://levantamentodados-backend.onrender.com'}/api/matches/report`}
+              href={`${process.env.NEXT_PUBLIC_API_URL || 'https://levantamento-dados-api.vercel.app'}/api/matches/report`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-400 text-black text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.3)] active:scale-95"
