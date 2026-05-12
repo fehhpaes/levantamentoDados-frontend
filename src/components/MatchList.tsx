@@ -12,7 +12,6 @@ interface MatchListProps {
   leagueId?: number;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://levantamento-dados-api.vercel.app';
 const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || 'https://fehhpaes-previsao-fc-worker.hf.space';
 
 export const MatchList: React.FC<MatchListProps> = ({ initialMatches, leagueId }) => {

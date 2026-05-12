@@ -67,7 +67,7 @@ export const Header = () => {
     }
 
     return () => clearInterval(interval);
-  }, [syncInfo.isSyncing, router, syncInfo.isSyncing]);
+  }, [syncInfo.isSyncing, router]);
 
   const handleManualWake = async () => {
     setIsWaking(true);
@@ -214,5 +214,8 @@ export const Header = () => {
         )}
       </div>
     </header>
+  );
+};
+der>
   );
 };
