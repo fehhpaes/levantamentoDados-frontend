@@ -111,29 +111,31 @@ export const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-20 bg-black/60 backdrop-blur-xl border-b border-white/5 p-5">
-      <div className="flex flex-col max-w-md mx-auto gap-4">
+    <header className="sticky top-0 z-20 bg-black/60 backdrop-blur-xl border-b border-white/5 p-4 md:px-8">
+      <div className="flex flex-col w-full max-w-7xl mx-auto gap-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-green-400 to-green-600 p-2.5 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-              <LayoutDashboard size={22} className="text-black" />
+            <div className="bg-gradient-to-br from-green-400 to-green-600 p-2 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.2)] md:hidden">
+              <LayoutDashboard size={18} className="text-black" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-tight leading-none italic uppercase">PREVISÃO FC</h1>
-              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] mt-1.5">
-                AI Intelligence System
+              <h1 className="text-lg md:text-xl font-black tracking-tight leading-none italic uppercase">
+                Dashboard <span className="text-green-500 md:text-white">Live</span>
+              </h1>
+              <p className="text-[9px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] mt-1">
+                Real-time AI Analysis
               </p>
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 md:gap-4">
             {!syncInfo.isSyncing && (
-              <div className="flex gap-1">
+              <div className="hidden sm:flex gap-1.5 mr-2 border-r border-white/10 pr-4">
                 {quickLeagues.map(l => (
                   <button 
                     key={l.code}
                     onClick={() => handleSync(l.code)}
-                    className="text-[8px] font-black bg-zinc-900 border border-white/5 px-2 py-1 rounded-lg text-zinc-400 hover:text-green-500 hover:border-green-500/30 transition-all uppercase"
+                    className="text-[9px] font-black bg-zinc-900 border border-white/5 px-3 py-1.5 rounded-lg text-zinc-400 hover:text-green-500 hover:border-green-500/30 transition-all uppercase whitespace-nowrap"
                   >
                     + {l.name}
                   </button>
@@ -141,43 +143,45 @@ export const Header = () => {
               </div>
             )}
             
-            <button 
-              onClick={handleTrain}
-              disabled={isTraining || syncInfo.isSyncing}
-              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
-                isTraining ? 'bg-purple-500/20 text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'bg-zinc-900 text-zinc-600 hover:bg-zinc-800'
-              }`}
-              title="Treinar IA Agora"
-            >
-              <Brain size={18} className={isTraining ? 'animate-pulse' : ''} />
-            </button>
+            <div className="flex gap-2">
+              <button 
+                onClick={handleTrain}
+                disabled={isTraining || syncInfo.isSyncing}
+                className={`p-2.5 rounded-xl border border-white/5 active:scale-90 transition-all ${
+                  isTraining ? 'bg-purple-500/20 text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'bg-zinc-900 text-zinc-500 hover:bg-zinc-800'
+                }`}
+                title="Treinar IA Agora"
+              >
+                <Brain size={18} className={isTraining ? 'animate-pulse' : ''} />
+              </button>
 
-            <button 
-              onClick={() => handleSync()}
-              disabled={syncInfo.isSyncing}
-              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
-                syncInfo.isSyncing ? 'bg-zinc-800 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800'
-              }`}
-              title="Sincronizar tudo"
-            >
-              <RefreshCw 
-                size={18} 
-                className={`transition-all duration-1000 ${
-                  syncInfo.isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
-                }`} 
-              />
-            </button>
+              <button 
+                onClick={() => handleSync()}
+                disabled={syncInfo.isSyncing}
+                className={`p-2.5 rounded-xl border border-white/5 active:scale-90 transition-all ${
+                  syncInfo.isSyncing ? 'bg-zinc-800 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800'
+                }`}
+                title="Sincronizar tudo"
+              >
+                <RefreshCw 
+                  size={18} 
+                  className={`transition-all duration-1000 ${
+                    syncInfo.isSyncing ? 'animate-spin text-green-500' : 'text-zinc-400'
+                  }`} 
+                />
+              </button>
 
-            <button 
-              onClick={handleManualWake}
-              disabled={isWaking}
-              className={`p-2 rounded-full border border-white/5 active:scale-90 transition-all ${
-                isWaking ? 'bg-zinc-800 text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'bg-zinc-900 text-zinc-600 hover:bg-zinc-800'
-              }`}
-              title="Acordar Servidor"
-            >
-              <Zap size={18} className={isWaking ? 'animate-pulse' : ''} />
-            </button>
+              <button 
+                onClick={handleManualWake}
+                disabled={isWaking}
+                className={`p-2.5 rounded-xl border border-white/5 active:scale-90 transition-all ${
+                  isWaking ? 'bg-zinc-800 text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'bg-zinc-900 text-zinc-500 hover:bg-zinc-800'
+                }`}
+                title="Acordar Servidor"
+              >
+                <Zap size={18} className={isWaking ? 'animate-pulse' : ''} />
+              </button>
+            </div>
           </div>
         </div>
 
