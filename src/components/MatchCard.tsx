@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IMatch } from '@/services/api';
-import { Clock, TrendingUp, Target } from 'lucide-react';
+import { Clock, TrendingUp, Target, Brain, Info } from 'lucide-react';
 import { MatchDetailModal } from './MatchDetailModal';
 
 interface MatchCardProps {
@@ -53,6 +53,17 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
 
   const accuracy = getAccuracyStatus();
 
+  // Extract confidence from analysis text [Confiança: XX%]
+  const confidenceMatch = match.prediction?.analysis?.match(/\[Confiança:\s*(\d+)%\]/);
+  const confidence = confidenceMatch ? parseInt(confidenceMatch[1]) : null;
+  const cleanAnalysis = match.prediction?.analysis?.replace(/\[Confiança:\s*\d+%\]\s*•?\s*/, '') || '';
+
+  const getConfidenceColor = (val: number) => {
+    if (val >= 80) return 'text-green-500 bg-green-500/10 border-green-500/20';
+    if (val >= 65) return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
+    return 'text-zinc-500 bg-zinc-900 border-white/5';
+  };
+
   return (
     <>
       <div 
@@ -67,6 +78,14 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
             accuracy === 'HIT' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
           }`}>
             {accuracy === 'HIT' ? '✅ ACERTOU' : '❌ ERROU'}
+          </div>
+        )}
+
+        {/* Confidence Badge */}
+        {!accuracy && confidence && (
+          <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl font-black text-[10px] tracking-widest uppercase border-l border-b flex items-center gap-1.5 z-20 ${getConfidenceColor(confidence)}`}>
+            <Brain size={10} />
+            Confiança: {confidence}%
           </div>
         )}
 
@@ -185,6 +204,20 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
                 );
               })}
             </div>
+
+            {/* Phase 4: Dashboard Insights */}
+            {cleanAnalysis && (
+              <div className="pt-4 border-t border-white/[0.02]">
+                <div className="flex gap-2 items-start">
+                  <div className="mt-0.5">
+                    <Info size={12} className="text-zinc-600" />
+                  </div>
+                  <p className="text-[10px] text-zinc-500 font-medium italic leading-relaxed">
+                    {cleanAnalysis}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
