@@ -1,4 +1,4 @@
-import { getTodayMatches, getLeagues, getTopPredictions } from "@/services/api";
+import { getTodayMatches, getLeagues, getTopPredictions, getBacktestStats } from "@/services/api";
 import { Star, Calendar, Trophy, TrendingUp } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -19,9 +19,10 @@ export default async function Home({ searchParams }: HomeProps) {
   const showTop = params.filter === 'top';
   const showValue = params.filter === 'value';
 
-  const [matches, leagues] = await Promise.all([
+  const [matches, leagues, stats] = await Promise.all([
     showTop ? getTopPredictions() : getTodayMatches(leagueId, dateType),
-    getLeagues()
+    getLeagues(),
+    getBacktestStats()
   ]);
 
   // Client-side filtering for value bets if requested
@@ -130,19 +131,22 @@ export default async function Home({ searchParams }: HomeProps) {
                   <div>
                     <div className="flex justify-between text-[10px] font-black uppercase mb-2">
                       <span className="text-zinc-400">Taxa de Acerto</span>
-                      <span className="text-green-500">78.4%</span>
+                      <span className="text-green-500">{stats.accuracy}%</span>
                     </div>
                     <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="h-full w-[78.4%] bg-green-500" />
+                      <div 
+                        className="h-full bg-green-500 transition-all duration-1000" 
+                        style={{ width: `${stats.accuracy}%` }} 
+                      />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between text-[10px] font-black uppercase mb-2">
-                      <span className="text-zinc-400">ROI Mensal</span>
-                      <span className="text-purple-500">+12.2%</span>
+                      <span className="text-zinc-400">Amostragem</span>
+                      <span className="text-purple-500">{stats.total} JOGOS</span>
                     </div>
                     <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="h-full w-[65%] bg-purple-500" />
+                      <div className="h-full w-full bg-purple-500/30" />
                     </div>
                   </div>
                 </div>
